@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "chenjunfu2.portalbackport.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "EntityInvoker",
+    "FallingBlockEntityMixin",
+    "TntEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+	}
+}
