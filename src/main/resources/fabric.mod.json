@@ -3,31 +3,21 @@
 	"id": "portal-backport",
 	"version": "${version}",
 	"name": "portal-backport",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "MC 1.21+ Partial Portal Feature Migration",
 	"authors": [
-		"Me!"
+		"chenjunfu2"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "NULL",
+		"sources": "https://github.com/chenjunfu2/portal-backport"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/portal-backport/icon.png",
 	"environment": "*",
 	"entrypoints": {
-		"main": [
-			"chenjunfu2.portalbackport.Portalbackport"
-		],
-		"client": [
-			"chenjunfu2.portalbackport.PortalbackportClient"
-		]
 	},
 	"mixins": [
-		"portal-backport.mixins.json",
-		{
-			"config": "portal-backport.client.mixins.json",
-			"environment": "client"
-		}
+		"portal-backport.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.16.10",
