@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(FallingBlockEntity.class)
 public abstract class FallingBlockEntityMixin
 {
-	
 	@Inject(method = "tick",
 			at = @At(value = "INVOKE",target = "Lnet/minecraft/entity/FallingBlockEntity;move(Lnet/minecraft/entity/MovementType;Lnet/minecraft/util/math/Vec3d;)V",
 			shift = At.Shift.AFTER))
