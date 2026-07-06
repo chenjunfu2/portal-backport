@@ -1,8 +1,12 @@
 package chenjunfu2.portalbackport.mixin;
 
 import chenjunfu2.portalbackport.api.TntEntityMixinExt;
+import com.mojang.logging.LogUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.NetherPortalBlock;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.fluid.FluidState;
@@ -10,11 +14,15 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockLocating;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -27,7 +35,7 @@ import java.util.UUID;
 
 
 @Mixin(TntEntity.class)
-public abstract class TntEntityMixin implements TntEntityMixinExt
+public abstract class TntEntityMixin extends Entity implements TntEntityMixinExt
 {
 	//字段访问器
 	@Shadow private @Nullable LivingEntity causingEntity;
@@ -35,6 +43,34 @@ public abstract class TntEntityMixin implements TntEntityMixinExt
 	//添加新字段，用于获取是否进行过传送
 	@Unique
 	private boolean teleported = false;
+	
+	@Unique
+	private static final Logger portal_backport_1_20_1$LOGGER = LogUtils.getLogger();
+	
+	public TntEntityMixin(EntityType<?> type, World world)
+	{
+		super(type, world);
+	}
+	
+	//实现创建门的方法
+	@Override
+	protected Optional<BlockLocating.Rectangle> getPortalRect(ServerWorld destWorld, BlockPos destPos, boolean destIsNether, WorldBorder worldBorder) {
+		Optional<BlockLocating.Rectangle> optional = super.getPortalRect(destWorld, destPos, destIsNether, worldBorder);
+		if (optional.isPresent()) {
+			return optional;
+		} else {
+			Direction.Axis axis = (Direction.Axis)this.getWorld()
+				.getBlockState(this.lastNetherPortalPosition)
+				.getOrEmpty(NetherPortalBlock.AXIS)
+				.orElse(Direction.Axis.X);
+			Optional<BlockLocating.Rectangle> optional2 = destWorld.getPortalForcer().createPortal(destPos, axis);
+			if (!optional2.isPresent()) {
+				portal_backport_1_20_1$LOGGER.error("Unable to create a portal, likely target out of worldborder");
+			}
+
+			return optional2;
+		}
+	}
 	
 	@Unique
 	@Override
