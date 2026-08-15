@@ -12,8 +12,10 @@ import net.minecraft.entity.TntEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.BlockView;
@@ -64,7 +66,12 @@ public abstract class TntEntityMixin extends Entity implements TntEntityMixinExt
 				.getOrEmpty(NetherPortalBlock.AXIS)
 				.orElse(Direction.Axis.X);
 			Optional<BlockLocating.Rectangle> optional2 = destWorld.getPortalForcer().createPortal(destPos, axis);
-			if (!optional2.isPresent()) {
+			if (optional2.isPresent())
+			{
+				destWorld.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(destPos), 3, destPos);//加载票（super的getPortalRect自带加载票，这里需要自己补）
+			}
+			else
+			{
 				portal_backport_1_20_1$LOGGER.error("Unable to create a portal, likely target out of worldborder");
 			}
 
